@@ -158,7 +158,7 @@ def index():
             print(context)
             return render_template('index.html', context=context)
         except Exception as e:
-            print('Exception')
+            print('Exception', e)
             flash(f'Not able to connect to database or empty table')
             return redirect(request.path)
     return render_template('index.html')
