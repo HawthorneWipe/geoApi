@@ -1,17 +1,14 @@
-from flask import json
-from flask.json import dump
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.exc import IntegrityError, OperationalError
+from flask.helpers import url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, flash
 import requests
 from dotenv import load_dotenv
 import os
-from urllib.parse import urlparse
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from werkzeug.utils import redirect
 load_dotenv()
 app = Flask(__name__)
 GEO_API_KEY = os.getenv('SECRET_GEO_KEY')
@@ -149,10 +146,23 @@ def delete_entry():
         return jsonify({"Message": "Make sure you are using JSON payload"}), 400
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        print('that was a post')
+        try:
+            Persons = db.session.query(Person).order_by(Person.id).all()
+            if Persons == []:
+                raise Exception
+            context = {person for person in Persons}
+            print(context)
+            return render_template('index.html', context=context)
+        except Exception as e:
+            print('Exception')
+            flash(f'Not able to connect to database or empty table')
+            return redirect(request.path)
     return render_template('index.html')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

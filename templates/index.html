@@ -29,9 +29,28 @@
           <h1 class="display-3">This is a geolocation API!</h1>
           <p>Here are postman docs available for the API.</p>
           <p><a class="btn btn-primary btn-lg" href="https://documenter.getpostman.com/view/14748578/Tz5p4x6q" role="button">Go to Postman »</a></p>
+          <form action="" method="post">
+            <input class="btn btn-primary btn-lg" action="post" type="submit" value="Try list all the entries in database »"></input>
+          </form>
+
         </div>
       </div>
-
+<div class="container">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% if context %}
+{% for p in context %}
+<li>Lattitude: {{ p.lat }} Longitude: {{ p.lon }}</li>
+{% endfor %}
+{% endif %}
+</div>
     </main>
 
     <footer class="container">
