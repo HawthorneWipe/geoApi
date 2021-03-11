@@ -111,7 +111,7 @@ def geolocate():
 
 @app.route('/geolocateall', methods=['GET'])
 @jwt_required()
-def all_cafes():
+def all_entries():
     try:
         Persons = Person.query.all()
         if Persons == []:
@@ -126,7 +126,7 @@ def all_cafes():
 
 
 @app.route('/geolocateRemove', methods=['DELETE'])
-def delete_cafe():
+def delete_entry():
     if request.is_json:
         if 'visit' not in request.json:
             return jsonify({"Message":
@@ -147,6 +147,11 @@ def delete_cafe():
                 return jsonify({"Error": "Could not delete from the database"}), 404
     else:
         return jsonify({"Message": "Make sure you are using JSON payload"}), 400
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
