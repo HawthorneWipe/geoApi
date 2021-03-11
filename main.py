@@ -15,12 +15,8 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 load_dotenv()
 app = Flask(__name__)
 GEO_API_KEY = os.getenv('SECRET_GEO_KEY')
-Debug = True
-if Debug == True:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Persons.db'
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'DATABASE_URL', 'sqlite:///Persons.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False
 app.secret_key = os.getenv('SECRET_FLASK_KEY')
