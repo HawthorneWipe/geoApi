@@ -37,7 +37,7 @@ class PersonSerializer(SQLAlchemyAutoSchema):
         load_instance = True
 
 
-db.create_all()
+# db.create_all()
 
 
 @app.route("/auth", methods=["POST"])
