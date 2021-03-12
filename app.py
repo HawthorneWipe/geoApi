@@ -7,18 +7,20 @@ import os
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from werkzeug.utils import redirect
 load_dotenv()
 app = Flask(__name__)
 GEO_API_KEY = os.getenv('SECRET_GEO_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL', 'sqlite:///Persons.db')
+    'DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False
 app.secret_key = os.getenv('SECRET_FLASK_KEY')
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 
 class Person(db.Model):
@@ -32,9 +34,6 @@ class PersonSerializer(SQLAlchemyAutoSchema):
     class Meta:
         model = Person
         load_instance = True
-
-
-# db.create_all()
 
 
 @app.route("/auth", methods=["POST"])
@@ -149,6 +148,8 @@ def delete_entry():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        print(os.getenv(
+            'DATABASE_URL'), 'what')
         print('that was a post')
         try:
             Persons = db.session.query(Person).order_by(Person.id).all()
@@ -158,11 +159,11 @@ def index():
             print(context)
             return render_template('index.html', context=context)
         except Exception as e:
-            print('Exception', e)
+            print(f'Exception {e}')
             flash(f'Not able to connect to database or empty table')
             return redirect(request.path)
     return render_template('index.html')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
