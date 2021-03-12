@@ -7,7 +7,6 @@ import os
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
-from flask_migrate import Migrate
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from werkzeug.utils import redirect
 load_dotenv()
@@ -20,7 +19,6 @@ app.config['JSON_AS_ASCII'] = False
 app.secret_key = os.getenv('SECRET_FLASK_KEY')
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
-migrate = Migrate(app, db)
 
 
 class Person(db.Model):
@@ -34,6 +32,9 @@ class PersonSerializer(SQLAlchemyAutoSchema):
     class Meta:
         model = Person
         load_instance = True
+
+
+db.create_all()
 
 
 @app.route("/auth", methods=["POST"])
@@ -150,17 +151,16 @@ def index():
     if request.method == 'POST':
         print(os.getenv(
             'DATABASE_URL'), 'what')
-        print('that was a post')
         try:
             Persons = db.session.query(Person).order_by(Person.id).all()
             if Persons == []:
-                raise Exception
+                raise Exception('Returned empty query from the database')
             context = {person for person in Persons}
             print(context)
             return render_template('index.html', context=context)
         except Exception as e:
-            print(f'Exception {e}')
-            flash(f'Not able to connect to database or empty table')
+            # print(f'Exception {e}')
+            flash(f'{e}')
             return redirect(request.path)
     return render_template('index.html')
 
