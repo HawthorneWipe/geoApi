@@ -137,7 +137,6 @@ def delete_entry():
             try:
                 ip = delete_entry.url
                 db.session.delete(delete_entry)
-                db.session.flush()
                 db.session.commit()
                 return jsonify({"message": f"Deleted entry {ip}"})
             except Exception as e:
